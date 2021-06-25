@@ -4,7 +4,7 @@ const N = 100000
 
 let attributes = {
     alpha: 1.89,
-    speed: 1 / 150,
+    speed: 1 / 50,
     angles: [0.57828, 5.8058, 0.],
     scale: 15.,
     camera: [0, 0, 0]
