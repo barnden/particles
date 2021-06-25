@@ -44,9 +44,46 @@ function createProgram(gl, shaders, transformFeedbackVaryings) {
     return program
 }
 
+function install_input_handler() {
+    const canvas = document.getElementById("display")
+
+    let mouse_down = false
+    let shift_down = false
+    let last = [0, 0]
+
+    canvas.addEventListener("mousedown", e => {
+        mouse_down = true
+        last = [e.clientX, e.clientY]
+    })
+
+    document.addEventListener("mouseup", _ => mouse_down = false)
+    document.addEventListener("mousemove", e => {
+        if (!mouse_down)
+            return;
+
+        let deltaX = (last[0] - e.clientX) / 100
+        let deltaY = (last[1] - e.clientY) / 100
+
+        if (shift_down) {
+            attributes.camera[0] += deltaX
+            attributes.camera[1] += -deltaY
+        } else {
+            attributes.angles[0] += -deltaY
+            attributes.angles[1] += deltaX
+        }
+
+        last = [e.clientX, e.clientY]
+    })
+    document.addEventListener("keydown", e => shift_down |= e.key.toLowerCase() === "shift")
+    document.addEventListener("keyup", e => shift_down &= e.key.toLowerCase() !== "shift")
+    
+}
+
 function main() {
     const canvas = document.getElementById("display")
     const gl = canvas.getContext("webgl2")
+
+    install_input_handler()
 
     const update_program = createProgram(
         gl,
