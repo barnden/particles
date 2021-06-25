@@ -1,21 +1,22 @@
 #version 300 es
 precision highp float;
 
+uniform vec3 u_Angles;
+
+// TODO: Use a transform from perspective projection into NDC instead of scaling w
+uniform float u_Scale;
+
 in vec3 i_Position;
 
-mat3 get_perspective(float tx, float ty, float tz)
+mat3 get_perspective(vec3 angles)
 {
     // Get the Perspective Projection
-    float cx = cos(tx),
-          cy = cos(ty),
-          cz = cos(tz),
-          sx = sin(tx),
-          sy = sin(ty),
-          sz = sin(tz);
-
-    float ex = -15.,
-          ey = -15.,
-          ez = -15.;
+    float cx = cos(angles.x),
+          cy = cos(angles.y),
+          cz = cos(angles.z),
+          sx = sin(angles.x),
+          sy = sin(angles.y),
+          sz = sin(angles.z);
 
     // clang-format off
     mat3 projection = mat3(
@@ -25,16 +26,12 @@ mat3 get_perspective(float tx, float ty, float tz)
     );
     // clang-format on
 
-    mat3 homogeneous_transform = mat3(1., 0., ex / ez,
-                                      0., 1., ey / ez,
-                                      0., 0., 1. / ez);
-
     return projection;
 }
 
 void main() {
-    mat3 projection = get_perspective(0.57828, 0.8058, -0.44);
+    mat3 projection = get_perspective(u_Angles);
 
-    gl_Position = vec4(i_Position, 25.);
-    gl_PointSize = 4.;
+    gl_Position = vec4(projection * i_Position, u_Scale);
+    gl_PointSize = 1.;
 }
