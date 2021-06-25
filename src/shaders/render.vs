@@ -2,8 +2,7 @@
 precision highp float;
 
 uniform vec3 u_Angles;
-
-// TODO: Use a transform from perspective projection into NDC instead of scaling w
+uniform vec3 u_Camera;
 uniform float u_Scale;
 
 in vec3 i_Position;
@@ -31,7 +30,8 @@ mat3 get_perspective(vec3 angles)
 
 void main() {
     mat3 projection = get_perspective(u_Angles);
+    vec3 rel_position = i_Position - u_Camera;
 
-    gl_Position = vec4(projection * i_Position, u_Scale);
+    gl_Position = vec4(projection * rel_position, u_Scale);
     gl_PointSize = 1.;
 }

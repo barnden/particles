@@ -2,7 +2,13 @@
 
 const N = 25000
 
-let [ALPHA, SPEED, ANGLES, SCALE] = [1.89, 1 / 150, [0.57828, 5.8058, 0.], 15.]
+let attributes = {
+    alpha: 1.89,
+    speed: 1 / 150,
+    angles: [0.57828, 5.8058, 0.],
+    scale: 15.,
+    camera: [0, 0, 0]
+}
 
 function createShader(gl, type, name) {
     let shader = gl.createShader(type)
@@ -63,12 +69,13 @@ function main() {
         i_Position: gl.getAttribLocation(update_program, "i_Position"),
         u_Alpha: gl.getUniformLocation(update_program, "u_Alpha"),
         u_Speed: gl.getUniformLocation(update_program, "u_Speed"),
-        u_RgbNoise: gl.getUniformLocation(update_program, "u_RgbNoise")
+        u_RgbNoise: gl.getUniformLocation(update_program, "u_RgbNoise"),
     }
 
     const render_locations = {
         i_Position: gl.getAttribLocation(render_program, "i_Position"),
         u_Angles: gl.getUniformLocation(render_program, "u_Angles"),
+        u_Camera: gl.getUniformLocation(render_program, "u_Camera"),
         u_Scale: gl.getUniformLocation(render_program, "u_Scale"),
     }
 
@@ -160,8 +167,8 @@ function main() {
         gl.useProgram(update_program)
         gl.bindVertexArray(current.update)
 
-        gl.uniform1f(update_locations.u_Alpha, ALPHA)
-        gl.uniform1f(update_locations.u_Speed, SPEED)
+        gl.uniform1f(update_locations.u_Alpha, attributes.alpha)
+        gl.uniform1f(update_locations.u_Speed, attributes.speed)
 
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_2D, RGB_Noise)
@@ -178,8 +185,9 @@ function main() {
         gl.disable(gl.RASTERIZER_DISCARD)
 
         gl.useProgram(render_program)
-        gl.uniform3f(render_locations.u_Angles, ...ANGLES)
-        gl.uniform1f(render_locations.u_Scale, SCALE)
+        gl.uniform3f(render_locations.u_Angles, ...attributes.angles)
+        gl.uniform3f(render_locations.u_Camera, ...attributes.camera)
+        gl.uniform1f(render_locations.u_Scale, attributes.scale)
         gl.bindVertexArray(current.render)
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
         gl.drawArrays(gl.POINTS, 0, N)
