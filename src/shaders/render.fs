@@ -5,10 +5,11 @@ out vec4 o_FragColor;
 
 void main()
 {
-    vec2 circ = 2. * gl_PointCoord - 1.;
+    vec3 color1 = vec3(1., 0., 0.);
+    vec3 color2 = vec3(0., 0., 1.);
 
-    if (dot(circ, circ) > 0.5)
-        discard;
+    float dist = distance(0., gl_FragCoord[2]);
+    vec3 color = mix(color1, color2, dist);
 
-    o_FragColor = vec4(1., 1., 0., 1.);
+    o_FragColor = vec4(color, 1.);
 }
