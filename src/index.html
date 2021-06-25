@@ -5,14 +5,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attractor</title>
+
+    <style>
+        body, html {
+            background: #000;
+        }
+    </style>
 </head>
 <body>
-    <canvas id="display"></canvas>
+    <canvas id="display" width="800" height="800"></canvas>
     <!-- shader-include: "particle.vs" as "update-vs" -->
     <!-- shader-include: "particle.fs" as "update-fs" -->
     <!-- shader-include: "render.vs" as "render-vs" -->
     <!-- shader-include: "render.fs" as "render-fs" -->
 
-    <script src="main.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
