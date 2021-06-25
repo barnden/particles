@@ -1,6 +1,6 @@
 'use strict';
 
-const N = 25000
+const N = 100000
 
 let attributes = {
     alpha: 1.89,
@@ -197,7 +197,19 @@ function main() {
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
+    let last = Date.now()
+    const frame_time = 1000 / 60
+
     let render = _ => {
+        const now = Date.now()
+        const delta = now - last
+
+        // Limit to 60 FPS
+        if (delta < frame_time)
+            return requestAnimationFrame(render)
+
+        last = now - (delta % frame_time)
+
         gl.clearColor(0x16 / 0xFF, 0x16 / 0xFF, 0x1D / 0xFF, 1.)
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
