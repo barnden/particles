@@ -83,6 +83,9 @@ function main() {
     const canvas = document.getElementById("display")
     const gl = canvas.getContext("webgl2")
 
+    if (!gl)
+        throw ("WebGL2 not supported")
+
     install_input_handler()
 
     const update_program = createProgram(
