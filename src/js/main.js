@@ -1,15 +1,34 @@
 'use strict';
 
-const N = 100000
-
-let attributes = {
-    alpha: 1.89,
-    speed: 1 / 50,
-    angles: [0.57828, 5.8058, 0.],
-    scale: 15.,
-    camera: [0, 0, 0]
+const N = 150000
+const attractors = {
+    halvorsen: {
+        alpha: 1.89,
+        speed: 1 / 80,
+        angles: [0.57828, 5.8058, 0.],
+        scale: 3.,
+        camera: [0, -0.5, 0],
+        ortho: [-4, 4, -4, 4, -4, 4]
+    },
+    lorenz: {
+        alpha: 0.,
+        speed: 1 / 90,
+        angles: [-1.66, -3.38, 0.],
+        scale: 6.125,
+        camera: [-1.25, 5, 25],
+        ortho: [-5., 5., -5., 5., -5., 5.]
+    },
+    thomas: {
+        alpha: 0.1998,
+        speed: 1 / 10,
+        angles: [2.23, -2.97, 0.],
+        scale: 1.,
+        camera: [0, 0, 0],
+        ortho: [-4.5, 4.5, -4.5, 4.5, -4.5, 4.5]
+    },
 }
 
+let attributes = attractors.halvorsen
 function createShader(gl, type, name) {
     let shader = gl.createShader(type)
     let source = document.getElementById(name).text
@@ -76,7 +95,6 @@ function install_input_handler() {
     })
     document.addEventListener("keydown", e => shift_down |= e.key.toLowerCase() === "shift")
     document.addEventListener("keyup", e => shift_down &= e.key.toLowerCase() !== "shift")
-    
 }
 
 function main() {
@@ -117,6 +135,7 @@ function main() {
         u_Angles: gl.getUniformLocation(render_program, "u_Angles"),
         u_Camera: gl.getUniformLocation(render_program, "u_Camera"),
         u_Scale: gl.getUniformLocation(render_program, "u_Scale"),
+        u_Ortho: gl.getUniformLocation(render_program, "u_Ortho")
     }
 
     // Generate 3 * N random floats in [0, 1]
@@ -237,9 +256,12 @@ function main() {
         gl.disable(gl.RASTERIZER_DISCARD)
 
         gl.useProgram(render_program)
+
         gl.uniform3f(render_locations.u_Angles, ...attributes.angles)
         gl.uniform3f(render_locations.u_Camera, ...attributes.camera)
         gl.uniform1f(render_locations.u_Scale, attributes.scale)
+        gl.uniform1fv(render_locations.u_Ortho, attributes.ortho)
+
         gl.bindVertexArray(current.render)
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
         gl.drawArrays(gl.POINTS, 0, N)
