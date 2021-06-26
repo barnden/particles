@@ -26,9 +26,25 @@ const attractors = {
         camera: [0, 0, 0],
         ortho: [-4.5, 4.5, -4.5, 4.5, -4.5, 4.5]
     },
+    sprott: {
+        consts: [2.07, 1.79],
+        speed: 1 / 10,
+        angles: [1.75, 1., 0.45],
+        scale: 0.85,
+        camera: [1, -0.5, -0.5],
+        ortho: [-5., 5., -5., 5., -5., 5.]
+    },
+    dadras: {
+        consts: [3, 2.7, 1.7, 2, 9],
+        speed: 1 / 35,
+        angles: [2.69, -3.06, 0.],
+        scale: 1.75,
+        camera: [-1, 0, 0],
+        ortho: [-8, 8, -8, 8, -8, 8]
+    },
 }
 
-let attributes = attractors.halvorsen
+let attributes = attractors[typeof(attractor) !== "undefined" ? attractor : "halvorsen"]
 function createShader(gl, type, name) {
     let shader = gl.createShader(type)
     let source = document.getElementById(name).text
