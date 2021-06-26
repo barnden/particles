@@ -20,5 +20,5 @@ vec3 get_velocity()
 
 void main()
 {
-    v_Position = i_Position + get_velocity() / 50.;
+    v_Position = i_Position + get_velocity() * u_Speed;
 }
