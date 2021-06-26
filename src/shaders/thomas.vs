@@ -1,7 +1,7 @@
 #version 300 es
 precision highp float;
 
-uniform float u_Alpha;
+uniform float u_Consts[1];
 uniform float u_Speed;
 uniform sampler2D u_RgbNoise;
 
@@ -12,9 +12,9 @@ out vec3 v_Position;
 vec3 get_velocity()
 {
     return vec3(
-        sin(i_Position.y) - u_Alpha * i_Position.x,
-        sin(i_Position.z) - u_Alpha * i_Position.y,
-        sin(i_Position.x) - u_Alpha * i_Position.z
+        sin(i_Position.y) - u_Consts[0] * i_Position.x,
+        sin(i_Position.z) - u_Consts[0] * i_Position.y,
+        sin(i_Position.x) - u_Consts[0] * i_Position.z
     );
 }
 

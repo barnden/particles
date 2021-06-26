@@ -3,7 +3,7 @@
 const N = 150000
 const attractors = {
     halvorsen: {
-        alpha: 1.89,
+        consts: [1.89],
         speed: 1 / 80,
         angles: [0.57828, 5.8058, 0.],
         scale: 3.,
@@ -11,7 +11,7 @@ const attractors = {
         ortho: [-4, 4, -4, 4, -4, 4]
     },
     lorenz: {
-        alpha: 0.,
+        consts: [10., 28., 8. / 3.],
         speed: 1 / 90,
         angles: [-1.66, -3.38, 0.],
         scale: 6.125,
@@ -19,7 +19,7 @@ const attractors = {
         ortho: [-5., 5., -5., 5., -5., 5.]
     },
     thomas: {
-        alpha: 0.1998,
+        consts: [0.1998],
         speed: 1 / 10,
         angles: [2.23, -2.97, 0.],
         scale: 1.,
@@ -125,7 +125,7 @@ function main() {
 
     const update_locations = {
         i_Position: gl.getAttribLocation(update_program, "i_Position"),
-        u_Alpha: gl.getUniformLocation(update_program, "u_Alpha"),
+        u_Consts: gl.getUniformLocation(update_program, "u_Consts"),
         u_Speed: gl.getUniformLocation(update_program, "u_Speed"),
         u_RgbNoise: gl.getUniformLocation(update_program, "u_RgbNoise"),
     }
@@ -238,7 +238,7 @@ function main() {
         gl.useProgram(update_program)
         gl.bindVertexArray(current.update)
 
-        gl.uniform1f(update_locations.u_Alpha, attributes.alpha)
+        gl.uniform1fv(update_locations.u_Consts, attributes.consts)
         gl.uniform1f(update_locations.u_Speed, attributes.speed)
 
         gl.activeTexture(gl.TEXTURE0)
