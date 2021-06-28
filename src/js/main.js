@@ -44,7 +44,33 @@ const attractors = {
     },
 }
 
-let attributes = attractors[typeof(attractor) !== "undefined" ? attractor : "halvorsen"]
+let attributes = attractors[typeof (attractor) !== "undefined" ? attractor : "halvorsen"]
+
+function get_perspective() {
+    const [cx, cy, cz] = attributes.angles.map(v => Math.cos(v))
+    const [sx, sy, sz] = attributes.angles.map(v => Math.sin(v))
+
+    return [
+        cy * cz, cy * sz, -sy,
+        sx * sy * cz - cx * sz, sx * sy * sz + cx * cz, sx * cy,
+        cx * sy * cz + sx * sz, cx * sy * sz - sx * cz, cx * cy
+    ]
+}
+
+function get_orthographic() {
+    const [left, right, bottom, top, near, far] = attributes.ortho
+
+    return [
+        2. / (right - left), 0., 0., -(right + left) / (right - left),
+        0., 2. / (top - bottom), 0., -(top + bottom) / (top - bottom),
+        0., 0., -2. / (far - near), -(far + near) / (far - near),
+        0., 0., 0., 1.
+    ]
+}
+
+let mat_perspective = get_perspective()
+let mat_orthographic = get_orthographic()
+
 function createShader(gl, type, name) {
     let shader = gl.createShader(type)
     let source = document.getElementById(name).text
@@ -107,6 +133,8 @@ function install_input_handler() {
             attributes.angles[1] += deltaX
         }
 
+        mat_perspective = get_perspective()
+
         last = [e.clientX, e.clientY]
     })
     document.addEventListener("keydown", e => shift_down |= e.key.toLowerCase() === "shift")
@@ -151,7 +179,8 @@ function main() {
         u_Angles: gl.getUniformLocation(render_program, "u_Angles"),
         u_Camera: gl.getUniformLocation(render_program, "u_Camera"),
         u_Scale: gl.getUniformLocation(render_program, "u_Scale"),
-        u_Ortho: gl.getUniformLocation(render_program, "u_Ortho")
+        u_Orthographic: gl.getUniformLocation(render_program, "u_Orthographic"),
+        u_Perspective: gl.getUniformLocation(render_program, "u_Perspective")
     }
 
     // Generate 3 * N random floats in [0, 1]
@@ -235,11 +264,11 @@ function main() {
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
-    let last = Date.now()
+    let last = performance.now()
     const frame_time = 1000 / 60
 
     let render = _ => {
-        const now = Date.now()
+        const now = performance.now()
         const delta = now - last
 
         // Limit to 60 FPS
@@ -276,7 +305,9 @@ function main() {
         gl.uniform3f(render_locations.u_Angles, ...attributes.angles)
         gl.uniform3f(render_locations.u_Camera, ...attributes.camera)
         gl.uniform1f(render_locations.u_Scale, attributes.scale)
-        gl.uniform1fv(render_locations.u_Ortho, attributes.ortho)
+
+        gl.uniformMatrix4fv(render_locations.u_Orthographic, false, mat_orthographic)
+        gl.uniformMatrix3fv(render_locations.u_Perspective, false, mat_perspective)
 
         gl.bindVertexArray(current.render)
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
